@@ -1,0 +1,750 @@
+## Initialization and Pre-requisites
+
+### 0.1 System Requirements
+- **OS:** Windows 10 or later
+- **IDE:** Visual Studio Code (VS Code)
+- **Package Managers:** Node.js (with npm or yarn), Python (with pip)
+- **Database:** SQLite
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### 0.2 Pre-requisites Installation Steps
+
+#### 0.2.1 Install Node.js & npm (for React + TypeScript frontend)
+- Download and install Node.js (includes npm):  
+  [https://nodejs.org/](https://nodejs.org/)
+- Verify installation:
+  ```sh
+  node -v
+  npm -v
+  ```
+
+#### 0.2.2 Install Python (for Flask backend)
+- Download and install Python 3.x:  
+  [https://www.python.org/downloads/](https://www.python.org/downloads/)
+- Add Python to your PATH during installation.
+- Verify installation:
+  ```sh
+  python --version
+  pip --version
+  ```
+
+#### 0.2.3 Install SQLite
+- Download and install SQLite:  
+  [https://www.sqlite.org/download.html](https://www.sqlite.org/download.html)
+- (Optional) Add SQLite to PATH for command-line usage.
+- Verify installation:
+  ```sh
+  sqlite3 --version
+  ```
+
+#### 0.2.4 Install VS Code Extensions (recommended)
+- **Python**
+- **ESLint**
+- **Prettier**
+- **Jest**
+- **SQLite**
+- **React/TypeScript Snippets**
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### 0.3 Project Initialization Steps
+
+#### 0.3.1 Create Project Directory Structure
+```sh
+mkdir counting-machine-webapp
+cd counting-machine-webapp
+mkdir backend frontend
+```
+
+#### 0.3.2 Initialize the Backend (Flask + SQLite)
+```sh
+cd backend
+python -m venv venv
+venv\Scripts\activate    # (Windows, Powershell) or venv\Scripts\activate.bat (cmd)
+pip install Flask flask-cors sqlite3
+echo > app.py
+echo > requirements.txt
+# Add Flask and flask-cors to requirements.txt
+pip freeze > requirements.txt
+```
+
+#### 0.3.3 Initialize the Frontend (React + TypeScript)
+```sh
+cd ../frontend
+npx create-react-app . --template typescript
+npm install --save eslint prettier jest @testing-library/react @testing-library/jest-dom
+mkdir src/components
+```
+
+#### 0.3.4 Git Initialization
+```sh
+cd ..
+git init
+echo "venv/" > backend/.gitignore
+echo "node_modules/" > frontend/.gitignore
+echo ".DS_Store" > .gitignore
+```
+
+#### 0.3.5 VS Code Workspace Setup (optional)
+- Open the root folder in VS Code:
+  - `File > Open Folder...`
+- Configure workspace settings as needed.
+
+#### 0.3.6 Run Initial Development Servers
+- **Backend:**
+  ```sh
+  cd backend
+  venv\Scripts\activate
+  python app.py
+  ```
+- **Frontend:**
+  ```sh
+  cd ../frontend
+  npm start
+  ```
+- Access frontend at `http://localhost:3000` and backend at `http://localhost:5000` (default Flask port).
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### 0.4 Additional Setup
+
+- Ensure both frontend and backend can communicate (CORS should be enabled in Flask).
+- Create initial database schema using SQLite commands or script.
+- Initialize ESLint and Prettier configs for code linting and formatting.
+  ```sh
+  npx eslint --init
+  npx prettier --write .
+  ```
+- Confirm all dependencies are installed and servers run without errors.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### 0.5 Checklist for First-Time Initialization
+
+- [ ] Node.js and npm installed
+- [ ] Python 3.x and pip installed
+- [ ] SQLite installed
+- [ ] VS Code installed and extensions added
+- [ ] Project folder created with backend and frontend subfolders
+- [ ] Backend virtual environment created and dependencies installed
+- [ ] Frontend scaffolded with React + TypeScript
+- [ ] Git initialized and .gitignore files created
+- [ ] Servers tested and running locally
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+**After completing these steps, you are ready to begin development according to the SRS.**
+
+# Software Requirements Specification (SRS)
+
+## 1. Document Control
+- **Project Name:** CountingMachine
+- **Version:** 1.0
+- **Date:** 2025-09-24
+- **Authors:** newtoncuff
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 2. Introduction
+
+### 2.1 Purpose
+The Counting Machine Web App is designed to help children improve their counting and number sequence skills by interacting with number-based puzzles. The app presents a sequence of numbers with one or more missing values, prompting users to fill in the blanks by selecting the correct number from a set of options. The application is intended for educational use.
+
+### 2.2 Scope
+The app enables children to:
+- Select a difficulty level (easy, medium, hard) based on number range.
+- Solve counting puzzles by selecting numbers to fill blanks sequentially.
+- View immediate visual feedback on their selections with color-coded responses.
+- Track progress with a star-based reward system (10 consecutive correct answers).
+- Avoid repetition of number sequences within the last 10 tasks.
+- Experience celebration fireworks upon achieving 10 consecutive correct answers.
+
+The app also includes an administrative interface that allows:
+- Adding new puzzles manually or through auto-generation functionality.
+- Managing existing puzzles (edit/delete).
+- Uploading custom number sequences for puzzle creation.
+
+All data, including number sequences, user progress, and task history, is stored in a SQLite database. The application is fully containerized using Docker for easy deployment.
+
+### 2.3 Definitions, Acronyms, and Abbreviations
+- **Task:** A single counting puzzle.
+- **Sequence:** A series of numbers with one or more missing values.
+- **Difficulty:** Number range grouping (easy: 1–10, medium: 10–25, hard: 25–100).
+- **Blank:** A missing number in a sequence.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 3. Overall Description
+
+### 3.1 Product Perspective
+A standalone educational web app, not integrated with external systems. Backend in Python (Flask), frontend with standard web technologies.
+
+### 3.2 User Classes and Characteristics
+- **Child User:** Primary user who solves counting puzzles through sequential number selection, receives immediate visual feedback, and can track progress through a star-based reward system.
+- **Administrator:** Can access the admin panel at `/admin` to manage puzzles, create new number sequences, and monitor the puzzle database.
+
+### 3.3 Operating Environment
+- **Supported browsers:** Chrome, Firefox, Edge, Safari (current versions)
+- **Devices:** Desktop, tablet, mobile (responsive design implemented)
+- **Backend:** Python 3.11 with Flask framework
+- **Frontend:** React 18 with TypeScript
+- **Database:** SQLite with automatic schema initialization
+- **Deployment:** Docker containers with docker-compose orchestration
+- **Network:** RESTful API communication between frontend and backend
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 4. Functional Requirements
+
+### 4.1 Difficulty Selection
+- Users can choose difficulty (easy: 1–10, medium: 10–25, hard: 25–100).
+- The app generates puzzles accordingly.
+
+### 4.2 Puzzle Generation
+- App selects a random number sequence (matching difficulty) and randomly removes one or more numbers for the user to fill in.
+- Ensures the same sequence is not shown within the previous 10 tasks.
+
+### 4.3 Interactive Puzzle Solving
+- Display the sequence with missing numbers as blanks, with visible numbers shown in regular format.
+- Number options displayed below: all numbers in **white** with **colorful borders** (randomized colors), always selectable and unchanged on selection.
+- Sequential blank filling system:
+  - Only the **next blank in order** (left to right) is active for input.
+  - User must complete blanks sequentially - cannot skip ahead.
+  - When a user clicks a number:
+    - The number fills the **current active blank**.
+    - If correct:
+      - Number turns **green** with white text.
+      - A **green check mark (✓)** appears above the number.
+      - System automatically advances to the next blank.
+      - When all blanks are filled correctly, sequence is automatically submitted.
+    - If incorrect:
+      - Number turns **red** with white text.
+      - Blank is cleared after **2 seconds**.
+      - User remains on the same blank position.
+- Numbers in the options can be selected multiple times (to fill repeated numbers in sequences).
+- Submit button appears and becomes active only when all blanks are completed.
+- Immediate submission occurs when the final blank is filled correctly.
+
+### 4.4 User Progress Tracking & Reward System
+- **Star-based Progress Display:** Shows 10 star positions with filled/unfilled states.
+- **Consecutive Correct Tracking:** Tracks consecutive correct answers across puzzle sessions.
+- **Celebration System:** When user reaches 10 consecutive correct answers:
+  - Full-screen fireworks animation is displayed.
+  - Congratulatory message appears with celebration text.
+  - Progress resets to 0 after celebration.
+- **Visual Progress Indicators:** Stars fill with golden images as progress increases.
+- **Persistent Progress:** Progress is maintained across browser sessions via database storage.
+
+### 4.5 Data Management & Database Schema
+- **SQLite Database** with automatic initialization and schema creation:
+  - `sequences` table: id, numbers, difficulty
+  - `tasks` table: id, user_id, sequence_id, date, completed, correct
+  - `users` table: id, name, consecutive_correct
+- **Automatic Data Population:** Database auto-populates with random sequences on startup.
+- **Difficulty Auto-Assignment:** Sequence difficulty automatically determined by number range.
+
+### 4.6 Administrative Interface
+- **Admin Panel Access:** Available at `/admin` route with full CRUD operations.
+- **Manual Sequence Creation:** Form-based interface for creating custom number sequences.
+- **Sequence Management:** Edit existing sequences, delete sequences, view all sequences in table format.
+- **Bulk Operations:** Support for multiple sequence operations and batch management.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 5. Non-Functional Requirements
+
+### 5.1 Performance
+- <500ms response time for puzzle generation and UI feedback.
+
+### 5.2 Reliability
+- App should recover gracefully from errors and not crash.
+
+### 5.3 Security
+- No personal data required; basic protection against script injection.
+
+### 5.4 Usability
+- Accessible, large buttons, clear visuals, colorblind-friendly palette, touch-friendly.
+
+### 5.5 Maintainability
+- Modular codebase, documented functions, easy to update number sequences.
+
+### 5.6 Portability
+- Works across major browsers and mobile devices.
+
+### 5.7 Accessibility
+- All UI elements must have descriptive labels and alt text where appropriate.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 6. System Architecture
+
+### 6.1 Technology Stack (IMPLEMENTED)
+- **Frontend:** React 18 with TypeScript, CSS3, HTML5
+- **Backend:** Python 3.11 with Flask 2.0.1, Flask-CORS 3.0.10
+- **Languages:** TypeScript (frontend), Python (backend)
+- **Database:** SQLite with custom database wrapper class
+- **APIs:** RESTful endpoints (Flask) with JSON communication
+- **HTTP Client:** Axios for API communication
+- **Routing:** React Router DOM for client-side routing
+- **Containerization:** Docker with docker-compose for orchestration
+- **Development Tools:** VS Code, ESLint, Jest for testing
+- **Deployment:** Docker containers with volume mounting for data persistence
+
+### 6.2 Component Overview (IMPLEMENTED)
+- **Frontend Components:**
+  - `Game`: Main game orchestration and state management
+  - `DifficultySelector`: Three-level difficulty selection interface
+  - `PuzzleSequence`: Interactive sequence display with blank management
+  - `NumberSelector`: Interactive number options with colorful borders
+  - `FeedbackPopup`: Modal feedback system with next/retry options
+  - `Progress`: Star-based progress visualization (10-star system)
+  - `Fireworks`: Full-screen celebration animation component
+  - `Admin`: Complete administrative interface for sequence management
+
+- **Backend API Endpoints:**
+  - `GET /api/difficulty`: Returns available difficulty levels
+  - `GET /api/puzzle`: Generates new puzzle with anti-repetition logic
+  - `POST /api/submit`: Processes answer submission and updates progress
+  - `GET /api/progress`: Retrieves user''s consecutive correct count
+  - `GET /api/stats`: Returns user statistics and performance data
+  - **Admin Endpoints:**
+    - `GET /api/admin/sequences`: Lists all sequences for management
+    - `POST /api/admin/sequences`: Creates new sequence
+    - `PUT /api/admin/sequences/<id>`: Updates existing sequence
+    - `DELETE /api/admin/sequences/<id>`: Removes sequence
+    - `POST /api/admin/upload-sequence`: Handles manual sequence uploads
+
+- **Database Implementation:**
+  - Custom `CountingMachineDatabase` class with automatic initialization
+  - Comprehensive CRUD operations for all entities
+  - Anti-repetition logic for sequence selection
+  - Progress tracking and statistics calculation
+
+### 6.3 Frontend Component Structure & Standards (IMPLEMENTED)
+- **Framework:** React 18 with TypeScript for type safety and modern React features.
+- **Component Organization:** All components reside in `/src/components/` with individual folders.
+- **Implemented Component Structure:**
+  ```
+  /src/components/
+    /NumberSelector/     - Interactive number options with color coding
+    /DifficultySelector/ - Three-level difficulty selection
+    /FeedbackPopup/      - Modal success/failure feedback system
+    /PuzzleSequence/     - Interactive sequence puzzle with sequential blanks
+    /Progress/           - Star-based progress visualization
+    /Fireworks/          - Celebration animation system
+    /Game/               - Main game orchestration component
+    /Admin/              - Complete admin panel
+  ```
+- **Naming Convention:** All components use **PascalCase** (implemented as specified).
+- **TypeScript Integration:** 
+  - Strict TypeScript interfaces in `/src/types.ts`
+  - All props and state are strongly typed
+  - No usage of `any` type throughout the codebase
+- **Styling Approach:** 
+  - Component-specific CSS files (e.g., `Component.css`)
+  - Dynamic styles for interactive elements (number colors, progress states)
+  - Responsive design with mobile-first approach
+- **Component Philosophy:** Each component has single responsibility and clear interfaces.
+
+### 6.4 Actual Component Organization (IMPLEMENTED)
+```
+/src/components/
+  /NumberSelector/
+    NumberSelector.tsx    - Interactive number options
+    NumberSelector.css    - Styling with hover effects and color borders
+    __tests__/            - Component testing directory
+  /DifficultySelector/
+    DifficultySelector.tsx  - Easy/Medium/Hard selection interface
+    DifficultySelector.css  - Button styling and responsive design
+    __tests__/              - Unit tests directory
+  /FeedbackPopup/
+    FeedbackPopup.tsx       - Modal feedback with correct/incorrect states
+    FeedbackPopup.css       - Modal styling and animations
+    __tests__/              - Testing framework integration
+  /PuzzleSequence/
+    PuzzleSequence.tsx      - Interactive sequence with sequential blanks
+    PuzzleSequence.css      - Number styling, animations, and status colors
+    __tests__/
+      PuzzleSequence.test.tsx   - Comprehensive component testing
+  /Progress/
+    Progress.tsx            - Star-based progress visualization
+    Progress.css            - Star animations and progress indicators
+  /Fireworks/
+    Fireworks.tsx           - Full-screen celebration animation
+    Fireworks.css           - CSS animations and keyframes for fireworks
+  /Game/
+    Game.tsx                - Main game logic and state management
+  /Admin/
+    Admin.tsx               - Complete admin panel with CRUD operations
+    Admin.css               - Administrative interface styling
+```
+
+### 6.5 API Documentation
+- All Flask API endpoints must be documented using Swagger/OpenAPI or Markdown for maintainability.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 7. Data Design
+
+### 7.1 Database Schema (IMPLEMENTED)
+- **sequences:** 
+  - `id` (INTEGER PRIMARY KEY AUTOINCREMENT)
+  - `numbers` (TEXT NOT NULL) - The sequence of numbers (e.g., "1,2, ,4,5")
+  - `difficulty` (TEXT NOT NULL) - 'easy', 'medium', or 'hard'
+
+- **tasks:** 
+  - `id` (INTEGER PRIMARY KEY AUTOINCREMENT)
+  - `user_id` (INTEGER) - References users table
+  - `sequence_id` (INTEGER NOT NULL) - Foreign key to sequences table
+  - `date` (TEXT NOT NULL) - ISO timestamp of task creation
+  - `completed` (BOOLEAN NOT NULL DEFAULT 0) - Task completion status
+  - `correct` (BOOLEAN NOT NULL DEFAULT 0) - Answer correctness
+
+- **users:** 
+  - `id` (INTEGER PRIMARY KEY AUTOINCREMENT)
+  - `name` (TEXT) - User identifier
+  - `consecutive_correct` (INTEGER DEFAULT 0) - Progress tracking for rewards
+
+### 7.2 Data Validation
+- Sequences: Numbers must be within the selected difficulty range; no duplicate sequences.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 8. UI/UX Requirements
+
+### 8.1 Main Puzzle Screen (IMPLEMENTED)
+- **Layout:** Vertically stacked layout with sequence at top, number options below.
+- **Sequence Display:** Interactive sequence with blanks represented as dashed boxes, visible numbers shown normally.
+- **Current Blank Indicator:** Active blank highlighted with blue border and subtle glow effect.
+- **Number Options:** Numbers in white with dynamically generated colorful borders, large touch-friendly buttons.
+- **Submit Button:** Large "GO" button that activates only when all blanks are filled.
+- **Progress Display:** Star-based progress indicator showing consecutive correct answers.
+
+### 8.2 Sequential Blank Filling System (IMPLEMENTED)
+- **Enforced Order:** Users must fill blanks left-to-right, cannot skip ahead.
+- **Active Blank Highlighting:** Current blank clearly indicated with blue border.
+- **Auto-Advancement:** System automatically moves to next blank after correct number.
+- **Auto-Submission:** When final blank is filled correctly, sequence automatically submits.
+- **Error Handling:** Incorrect numbers cause user to remain on same blank after 2-second delay.
+
+### 8.3 Number Options Display (IMPLEMENTED)
+- **Visual Design:** White numbers with dynamically generated colorful borders.
+- **Interaction:** All numbers remain selectable throughout the game session.
+- **Hover Effects:** Scale transformation and shadow effects on hover/touch.
+- **Repeated Selection:** Same number can be selected multiple times for sequences with repeated numbers.
+- **Responsive Layout:** Flexible grid layout that adapts to screen size.
+
+### 8.4 Feedback System (IMPLEMENTED)
+- **Immediate Visual Feedback:**
+  - Correct numbers: Green background with white text and green checkmark above
+  - Incorrect numbers: Red background with white text, cleared after 2 seconds
+- **Modal Feedback:** Success/failure popup with encouraging messages
+- **Progress Feedback:** Visual star filling as consecutive correct answers increase
+- **Celebration System:** Full-screen fireworks animation for 10 consecutive correct answers
+- **Action Options:** "Next Puzzle" and "Try Again" buttons in feedback modals
+
+### 8.5 Device Accessibility & Responsive Design (IMPLEMENTED)
+- **Touch-Friendly:** Large buttons (60x60px on desktop, 50x50px on mobile) with hover/touch states
+- **Responsive Layout:** Mobile-first CSS with breakpoints for tablets and desktops
+- **Accessibility Features:**
+  - Descriptive labels for all UI elements
+  - Keyboard navigation support
+  - Color contrast compliance
+  - Screen reader friendly markup
+- **Cross-Device Testing:** Optimized for desktop, tablet, and mobile interfaces
+- **Loading States:** Visual feedback during API calls and sequence loading
+
+### 8.6 Component Documentation & Reusability
+- Every component must be documented with JSDoc comments.
+- Prop types must be strictly typed and validated.
+- Components should be easy to extend or reuse in future features.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 9. Integration Requirements (IMPLEMENTED)
+
+### 9.1 Administrative Interface
+- **Admin Panel:** Full-featured administrative interface accessible at `/admin` route.
+- **Sequence Upload System:** Supports both manual and automatic sequence creation.
+- **CRUD Operations:** Complete Create, Read, Update, Delete operations for all sequences.
+- **Real-time Validation:** Sequence availability checking and visual confirmation.
+
+### 9.2 API Integration
+- **RESTful Architecture:** Clean separation between frontend and backend via REST API.
+- **Error Handling:** Comprehensive error handling with user-friendly error messages.
+- **CORS Support:** Cross-origin resource sharing configured for frontend-backend communication.
+- **JSON Communication:** All API endpoints communicate via JSON format.
+
+### 9.3 Database Integration
+- **Automatic Initialization:** Database schema automatically created on first run.
+- **Data Population:** Auto-population of sequences on startup.
+- **Transaction Support:** Database operations wrapped in transactions for data integrity.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 10. Security Requirements (IMPLEMENTED)
+
+### 10.1 Data Security
+- **No Personal Data:** Application does not collect or store personal user information.
+- **Local Storage:** All data stored locally in SQLite database.
+- **Input Validation:** Server-side validation for all API inputs.
+
+### 10.2 Access Control
+- **Admin Interface:** Administrative functions accessible but not password-protected (suitable for controlled environments).
+- **Child Safety:** No external links or data collection that could compromise child privacy.
+- **CORS Configuration:** Controlled cross-origin access for API endpoints.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 11. Testing & Quality Assurance
+
+### 11.1 Testing Strategy
+- Unit tests for backend logic (Flask).
+- Integration tests for endpoints.
+- Manual/automated UI tests for puzzle interaction.
+
+### 11.2 Acceptance Criteria (VERIFIED AS IMPLEMENTED)
+- ✅ **Sequential Blank Filling:** Numbers fill blanks in strict left-to-right order, cannot skip ahead.
+- ✅ **Visual Feedback:** Correct numbers turn green with checkmark above; incorrect numbers turn red.
+- ✅ **Number Option Persistence:** All number options remain white with colorful borders and stay selectable.
+- ✅ **Automatic Advancement:** System moves to next blank automatically after correct number entry.
+- ✅ **Error Handling:** Incorrect numbers are cleared after 2-second delay, user stays on same blank.
+- ✅ **Repeated Number Support:** Same number can be selected multiple times for sequences with repeated numbers.
+- ✅ **Anti-Repetition:** No sequence repeats within the last 10 completed tasks.
+- ✅ **Responsive Design:** App works on desktop, tablet, and mobile with touch-friendly interface.
+- ✅ **Progress Tracking:** Star-based system tracks consecutive correct answers up to 10.
+- ✅ **Celebration System:** Fireworks animation triggers after 10 consecutive correct answers.
+- ✅ **Admin Interface:** Full CRUD operations for sequence management.
+- ✅ **Auto-Submission:** Sequence automatically submits when final blank is filled correctly.
+- ✅ **Performance:** Fast response times for puzzle generation and UI interactions.
+- ✅ **Database Persistence:** Progress and puzzle data persist across browser sessions.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 12. Deployment & Maintenance
+
+### 12.1 Deployment Pipeline (IMPLEMENTED)
+- **Docker Containerization:** Complete application containerized with docker-compose.
+- **Multi-Container Setup:** Separate containers for frontend (React) and backend (Flask).
+- **Volume Management:** Persistent data storage via Docker volumes for database.
+- **Environment Configuration:** Environment variables for API URLs and deployment settings.
+- **Production Ready:** Optimized builds with production-ready configurations.
+
+### 12.2 Monitoring (IMPLEMENTED)
+- **Application Logging:** Comprehensive debug logging throughout backend operations.
+- **Error Handling:** Graceful error handling with user-friendly error messages.
+- **Health Checking:** API endpoints provide status information for monitoring.
+- **Database Monitoring:** Built-in database health checks and automatic recovery.
+
+### 12.3 Maintenance Plan
+- Update number sequences as needed; bug fixes via GitHub Issues.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 13. Appendix
+
+### 13.1 Assumptions & Dependencies
+- Sequences are generated and properly validated.
+- SQLite is suitable for intended scale.
+- App is for educational, non-commercial use.
+
+### 13.2 References
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [SQLite Documentation](https://sqlite.org/)
+- [JavaScript Documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 14. Change Log
+
+- **2025-09-24** | Initial SRS for CountingMachine | newtoncuff
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 15. Development Process & Coding Standards
+
+### 15.1 Component Naming
+- All files and folders use **PascalCase** for components.
+- No ambiguous names—names should reflect the component''s function.
+
+### 15.2 TypeScript Usage
+- All props, state, and API data use strict TypeScript interfaces or types.
+- No usage of `any` type unless absolutely necessary (and documented).
+
+### 15.3 Linting & Formatting
+- Use `eslint` and `prettier` with strict settings for TypeScript and React.
+- CI pipeline must fail on lint or type errors.
+
+### 15.4 Testing
+- Each component must have at least one unit test in `/__tests__/`.
+- Use Jest and React Testing Library for frontend tests.
+
+### 15.5 Code Review
+- All pull requests require review before merging.
+- Code must adhere to documented standards.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 16. Deployment via Docker
+
+### 16.1 Docker Deployment Overview
+
+- The application will be containerized using Docker for both backend (Flask) and frontend (React + TypeScript).
+- SQLite database will be stored on a Docker volume for persistent data.
+- Deployment orchestration will be managed with `docker-compose` to run both services and mount the database.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### 16.2 Docker Prerequisites
+
+- Install Docker Desktop for Windows: [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
+- Verify installation:
+  ```sh
+  docker --version
+  docker-compose --version
+  ```
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### 16.3 Project Structure for Docker
+
+```
+counting-machine-webapp/
+  backend/
+    app.py
+    requirements.txt
+    Dockerfile
+  frontend/
+    (React app files)
+    Dockerfile
+  docker-compose.yml
+  data/
+    (created for sqlite volume)
+```
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### 16.4 Docker Implementation (IMPLEMENTED)
+
+The application has been successfully containerized with the following actual configuration:
+
+#### Backend Dockerfile (`backend/Dockerfile`)
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["python", "-u", "app.py"]
+```
+
+#### Frontend Dockerfile (`frontend/Dockerfile`)
+```dockerfile
+FROM node:20
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+RUN npm run build
+
+EXPOSE 3000
+
+# Serve production build with a simple static server
+RUN npm install -g serve
+CMD ["serve", "-s", "build", "-l", "3000"]
+```
+
+#### Production Docker Compose (`docker-compose.yml`)
+```yaml
+version: '3.9'
+
+services:
+  backend:
+    build: ./backend
+    container_name: counting_backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: counting_frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=http://[DEPLOYMENT_IP]:5000/api
+    restart: unless-stopped
+
+volumes:
+  data:
+```
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### 16.5 Docker Usage & Deployment (IMPLEMENTED)
+
+#### Current Deployment Process:
+1. **Build and start containers:**
+    ```sh
+    docker-compose up --build -d
+    ```
+
+2. **Access the application:**
+   - Frontend: http://[DEPLOYMENT_IP]:3000
+   - Backend API: http://[DEPLOYMENT_IP]:5000
+   - Admin Panel: http://[DEPLOYMENT_IP]:3000/admin
+
+3. **Data Persistence:**
+   - SQLite database: `./data/database/counting_machine.db`
+   - Automatic volume mounting ensures data persists between container restarts
+
+#### Environment Configuration:
+- **Development:** Uses localhost URLs for local development
+- **Production:** Configurable via REACT_APP_API_URL environment variable
+- **LXC Container Deployment:** Successfully deployed on LXC containers with IP-based configuration
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### 16.6 Production Deployment Notes (IMPLEMENTED)
+
+#### Current Implementation Status:
+- ✅ **Full Containerization:** Both frontend and backend fully containerized
+- ✅ **CORS Configuration:** Backend properly configured for cross-origin requests
+- ✅ **Environment Variables:** Dynamic API URL configuration for different deployment environments
+- ✅ **Database Persistence:** SQLite database with automatic initialization and data persistence
+- ✅ **Production Optimization:** Production builds with optimized assets and caching
+
+#### Deployment Features:
+- **Container Orchestration:** Multi-container setup with dependency management
+- **Volume Management:** Persistent data storage for database
+- **Network Configuration:** Container networking with proper service discovery
+- **Restart Policies:** Automatic container restart on failure
+- **Environment Flexibility:** Configurable for different deployment scenarios (localhost, LXC, cloud)
+
+#### Requirements for Production:
+- Docker and docker-compose installed on target system
+- Port availability: 3000 (frontend), 5000 (backend)
+- Sufficient storage for SQLite database
+- Network configuration for container-to-container communication
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

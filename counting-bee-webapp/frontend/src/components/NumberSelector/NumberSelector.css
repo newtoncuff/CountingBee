@@ -1,0 +1,30 @@
+.number-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.number-btn {
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  background: #fff;
+  border: 3px solid #3498db;
+  border-radius: 12px;
+  color: #222;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.number-btn:hover:not(:disabled), .number-btn:focus:not(:disabled) {
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.number-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

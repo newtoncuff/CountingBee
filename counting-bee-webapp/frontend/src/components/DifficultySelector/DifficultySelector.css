@@ -1,0 +1,28 @@
+.difficulty-selector {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.difficulty-btn {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  background: #fff;
+  border: 2px solid #2980b9;
+  border-radius: 8px;
+  color: #222;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.difficulty-btn.selected {
+  background: #2980b9;
+  color: #fff;
+  border-color: #f1c40f;
+}
+
+.difficulty-btn:hover:not(.selected), .difficulty-btn:focus:not(.selected) {
+  background: #eaf6fb;
+  border-color: #3498db;
+}
